@@ -38,8 +38,8 @@ in your subprojects directory and include the dependency in your project.
 
 ```console
 [wrap-git]
-directory = miok-module
-url = https://github.com/miok-modules/module.git
+directory = miok-flist
+url = https://github.com/miok-modules/flist-c.git
 revision = main
 
 [provide]
@@ -50,7 +50,7 @@ module = module_dep
 The next step should be to add the package to your Meson project:
 
 ```meson
-module_dep = dependency('miko-module')
+module_dep = dependency('miko-flist-c')
 
 executable('prog', 'main.c',
     dependencies : [module_dep])
