@@ -1,10 +1,12 @@
-# Miok package
+# Miok forward list
 
 ## About
 
 * * *
 
-Please add relevant information about your package.
+Linked List is a linear data structure. Unlike arrays, linked list elements
+are not stored at a contiguous location; the elements are linked using pointers.
+The main data type that is returned will be the classic c string or char array.
 
 The design of the API has significant impact on its usage. The principle of
 information hiding describes the role of programming interfaces as enabling
@@ -68,17 +70,33 @@ more please view the API documentation thanks.
 **Usage in C**:
 
 ```c
-#include <stdio>
-#include <stdlib>
-#include <miko/package.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <miok/forwardlist.h>
 
 //
 // main is where all good examples start
 //
 int main(void)
 {
-    printf("%s", greet());
+    ForwardListOf *mList = miok_forward_list_create();
+    if (miok_forward_list_its_empty(mList))
+    {
+        return EXIT_FAILURE;
+    } // end if
+    miok_forward_list_push(mList, "* Cheese");
+    miok_forward_list_push(mList, "* coffee");
+    miok_forward_list_push(mList, "* Red Bull");
+    miok_forward_list_push(mList, "* Eggs");
+    miok_forward_list_push(mList, "* Milk");
+
+    printf("%s ", "Shopping list");
+    while (miok_forward_list_not_empty(mList))
+    {
+        printf("%s ", miok_forward_list_peek(mList));
+        miok_forward_list_pop(mList);
+    } // end while
+    miok_forward_list_erase(&mList);
     return EXIT_SUCCESS;
 } // end of function main
 
