@@ -3,15 +3,182 @@
 // author: Michael Brockus
 // gmail: <michaelbrockus@gmail.com>
 //
-#include "miok/package.h"
+#include "miok/forwardlist.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+enum
+{
+    failed,
+    success
+}; // end of local enums
 
 //
-// Should return a greeting message as it’s initial value
+// This is the official definition for the Amphibian Libraries
+// 'ForwardListNode' type.
+//
+// Members:
+// > [_data] is the private data member that represents the
+//           data in the structure
+// > [_next_ptr] is the pointer to the next node
+//
+typedef struct ForwardListNode
+{
+    char *_data;
+    struct ForwardListNode *_next_ptr;
+} ForwardListNode; // end of struct
+
+//
+// This is the official definition for the Amphibian Libraries
+// 'ForwardListOf' type.
+//
+// Members:
+// > _top_ptr is the pointer to top of ForwardList
+//
+struct ForwardListOf
+{
+    size_t _size;
+    struct ForwardListNode *_top_ptr;
+}; // end of struct
+
+//
+// Should return a newly hatched data structure object if
+// it pass the not nullptr test. But if it was a bad egg
+// we just return nullptr.
 //
 // Param list:
 // -> There is none to speak of at this time.
 //
-const char *greet(void)
+ForwardListOf *miok_forward_list_create(void)
 {
-    return "Hello, C Developer.";
-} // end of functions greet
+    ForwardListOf *new_structure = malloc(sizeof(*new_structure));
+    if (!new_structure)
+    {
+        return NULL;
+    } // end if
+    new_structure->_size = 0;
+    new_structure->_top_ptr = NULL;
+
+    return new_structure;
+} // end of function miok_forward_list_create
+
+//
+// Should erase the ForwardList structure if it’s not nullptr else
+// do nothing.
+//
+// Param list:
+// -> [structure_ref]: Reference pointer to your structure
+//
+void miok_forward_list_erase(ForwardListOf **structure_ref)
+{
+    
+    if (!*structure_ref)
+    {
+        return;
+    } // end if
+
+    ForwardListOf *temp_structure = *structure_ref;
+
+    while (!miok_forward_list_its_empty(temp_structure))
+    {
+        miok_forward_list_pop(temp_structure);
+    } // end while
+
+    free(temp_structure);
+    temp_structure = NULL;
+    *structure_ref = NULL;
+} // end of function miok_forward_list_erase
+
+//
+// Should push a new recored into the ForwardList if the
+// structure is not nullptr. Else nothing.
+//
+// Param list:
+// -> [structure_ptr]: Pointer to your structure
+// -> [data]: Your data being passed in
+//
+void miok_forward_list_push(ForwardListOf *structure_ptr, const char *data)
+{
+    if (!structure_ptr)
+    {
+        return;
+    } // end if
+
+    ForwardListNode *temp = malloc(sizeof(*temp));
+    if (!temp)
+    {
+        return;
+    } // end if
+
+    temp->_data = (char *)data;
+    temp->_next_ptr = structure_ptr->_top_ptr;
+    structure_ptr->_top_ptr = temp;
+    ++structure_ptr->_size;
+} // end of function miok_forward_list_push
+
+//
+// Should return the value stored in the removed node from
+// structure if the structure is both not nullptr and or
+// empty. If so where gonna return nullptr.
+//
+// Param list:
+// -> [structure_ptr]: Pointer to your structure
+//
+char *miok_forward_list_pop(ForwardListOf *structure_ptr)
+{
+	if (!structure_ptr->_top_ptr)
+    {
+        return NULL;
+    } // end if
+
+	ForwardListNode *temp = structure_ptr->_top_ptr;
+    char *popped = structure_ptr->_top_ptr->_data;
+	structure_ptr->_top_ptr = structure_ptr->_top_ptr->_next_ptr;
+
+	temp->_data = 0;
+	temp->_next_ptr = NULL;
+    --structure_ptr->_size;
+
+    free(temp);
+	temp = NULL;
+
+    return popped;
+} // end of function miok_forward_list_pop
+
+//
+// Should return the value stored in begin pointer from
+// structure if the structure is both not nullptr and or
+// empty. If so where gonna return nullptr.
+//
+// Param list:
+// -> [structure_ptr]: Pointer to your structure
+//
+char *miok_forward_list_peek(ForwardListOf *structure_ptr)
+{
+    return (structure_ptr->_top_ptr) ? structure_ptr->_top_ptr->_data : NULL;
+} // end of function miok_forward_list_peek
+
+//
+// Should return a success value if the structure is an
+// empty structure.
+//
+// Param list:
+// -> [structure_ptr]: Pointer to your structure
+//
+unsigned int miok_forward_list_its_empty(ForwardListOf *structure_ptr)
+{
+    return (!structure_ptr->_top_ptr) ? success : failed;
+} // end of function miok_forward_list_its_empty
+
+//
+// Should return a success value if the structure is not
+// an empty structure.
+//
+// Param list:
+// -> [structure_ptr]: Pointer to your structure
+//
+unsigned int miok_forward_list_not_empty(ForwardListOf *structure_ptr)
+{
+    return (structure_ptr->_top_ptr) ? success : failed;
+} // end of function miok_forward_list_not_empty
